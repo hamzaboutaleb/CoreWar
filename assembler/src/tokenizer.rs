@@ -2,6 +2,8 @@
 pub struct Token {
     pub kind: TokenKind,
     pub value: Option<String>,
+    pub line: usize,
+    pub column: usize,
 }
 
 #[derive(Debug, PartialEq)]
@@ -83,15 +85,15 @@ impl Tokenizer {
 
         let c = self.advance();
         match c {
-            '.' => Ok(self.new_token(TokenKind::Dot, None)),
-            '%' => Ok(self.new_token(TokenKind::Modulo, None)),
+            '.' => Ok(self.new_token(TokenKind::Dot, None, start_line, start_column)),
+            '%' => Ok(self.new_token(TokenKind::Modulo, None, start_line, start_column)),
+            ':' => Ok(self.new_token(TokenKind::Colon, None, start_line, start_column)),
+            '-' => Ok(self.new_token(TokenKind::Minus, None, start_line, start_column)),
+            ',' => Ok(self.new_token(TokenKind::Comma, None, start_line, start_column)),
             '"' => self.string(),
-            ':' => Ok(self.new_token(TokenKind::Colon, None)),
-            '-' => Ok(self.new_token(TokenKind::Minus, None)),
-            ',' => Ok(self.new_token(TokenKind::Comma, None)),
             '#' => self.skip_comments(),
-            c if c.is_alphabetic() || c == '_' => Ok(self.identifier()),
-            c if c.is_ascii_digit() => self.number(),
+            c if c.is_alphabetic() || c == '_' => Ok(self.identifier(start_line, start_column)),
+            c if c.is_ascii_digit() => self.number(start_line, start_column),
             _ =>
                 Err(TokenError::UnexpectedCharacter {
                     character: c,
@@ -114,12 +116,12 @@ impl Tokenizer {
         self.next_token()
     }
 
-    fn identifier(&mut self) -> Option<Token> {
+    fn identifier(&mut self, start_line: usize, start_column: usize) -> Option<Token> {
         while !self.is_eof() && (self.peek().is_alphanumeric() || self.peek() == '_') {
             self.advance();
         }
         let value: String = self.input[self.start..self.position].iter().collect();
-        self.new_token(TokenKind::Id, Some(value))
+        self.new_token(TokenKind::Id, Some(value), start_line, start_column)
     }
 
     fn string(&mut self) -> Result<Option<Token>, TokenError> {
@@ -139,19 +141,29 @@ impl Tokenizer {
 
         let value: String = self.input[self.start + 1..self.position].iter().collect();
         self.advance(); // consume closing quote
-        Ok(self.new_token(TokenKind::String, Some(value)))
+        Ok(self.new_token(TokenKind::String, Some(value), start_line, start_column))
     }
 
-    fn number(&mut self) -> Result<Option<Token>, TokenError> {
+    fn number(
+        &mut self,
+        start_line: usize,
+        start_column: usize
+    ) -> Result<Option<Token>, TokenError> {
         while !self.is_eof() && self.peek().is_ascii_digit() {
             self.advance();
         }
         let value: String = self.input[self.start..self.position].iter().collect();
-        Ok(self.new_token(TokenKind::Number, Some(value)))
+        Ok(self.new_token(TokenKind::Number, Some(value), start_line, start_column))
     }
 
-    fn new_token(&self, kind: TokenKind, value: Option<String>) -> Option<Token> {
-        Some(Token::new(kind, value))
+    fn new_token(
+        &self,
+        kind: TokenKind,
+        value: Option<String>,
+        line: usize,
+        column: usize
+    ) -> Option<Token> {
+        Some(Token::new(kind, value, line, column))
     }
 
     pub fn tokens(&mut self) -> Result<Vec<Token>, TokenError> {
@@ -197,7 +209,7 @@ impl Tokenizer {
 }
 
 impl Token {
-    pub fn new(kind: TokenKind, value: Option<String>) -> Self {
-        Self { kind, value }
+    pub fn new(kind: TokenKind, value: Option<String>, line: usize, column: usize) -> Self {
+        Self { kind, value, line, column }
     }
 }

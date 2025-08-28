@@ -16,7 +16,7 @@ fn test_dots() {
     let source = ".";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::Dot, None);
+    let expected_token = Token::new(TokenKind::Dot, None, 1, 1);
     assert_eq!(next_token, Some(expected_token));
 }
 
@@ -25,7 +25,7 @@ fn test_modulo() {
     let source = "%";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::Modulo, None);
+    let expected_token = Token::new(TokenKind::Modulo, None, 1, 1);
     assert_eq!(next_token, Some(expected_token))
 }
 
@@ -34,7 +34,7 @@ fn test_comma() {
     let source = ",";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::Comma, None);
+    let expected_token = Token::new(TokenKind::Comma, None, 1, 1);
     assert_eq!(next_token, Some(expected_token))
 }
 
@@ -43,7 +43,7 @@ fn test_string() {
     let source = "\"hello\"";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::String, Some("hello".to_string()));
+    let expected_token = Token::new(TokenKind::String, Some("hello".to_string()), 1, 1);
     assert_eq!(next_token, Some(expected_token))
 }
 
@@ -60,7 +60,7 @@ fn test_colon() {
     let source = ":";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::Colon, None);
+    let expected_token = Token::new(TokenKind::Colon, None, 1, 1);
     assert_eq!(next_token, Some(expected_token))
 }
 
@@ -69,7 +69,7 @@ fn test_minus() {
     let source = "-";
     let mut tokenizer = Tokenizer::new(source);
     let next_token = tokenizer.next_token().unwrap();
-    let expected_token = Token::new(TokenKind::Minus, None);
+    let expected_token = Token::new(TokenKind::Minus, None, 1, 1);
     assert_eq!(next_token, Some(expected_token))
 }
 
