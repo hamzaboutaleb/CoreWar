@@ -50,8 +50,6 @@ impl std::fmt::Display for TokenError {
     }
 }
 
-impl std::error::Error for TokenError {}
-
 pub struct Tokenizer {
     input: Vec<char>,
     position: usize,
